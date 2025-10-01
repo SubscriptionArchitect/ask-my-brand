@@ -1,11 +1,10 @@
-
 # ask-my-brand
 
 A tiny, dependency-free way to add a floating “Ask” widget to ANY site page and route questions to your brand’s Ask page.
 
 There are **two scripts** in this repo:
 
-1) **Site Page Widget** – add to any site page to render the floating Ask box and send users to your Ask page.  
+1) **Site Page Widget** – add to any site page to render the Ask box and send users to your Ask page.  
 2) **Ask Page Helper** – add to the Ask page itself to read the incoming query string, prefill your input, scroll to the right section, and programmatically press your Ask button.
 
 No frameworks. All configuration is via `data-*` attributes on the widget tag.
@@ -31,6 +30,8 @@ Place this near the end of `<body>` on the pages where you want the widget to ap
   data-primary="#297FA5"                                      <!-- optional -->
   data-secondary="#582E56"                                    <!-- optional -->
   data-position="bottom-right"                                <!-- optional: bottom-right | bottom-left -->
+
+  data-mount=""                                               <!-- optional: CSS selector; mount inside a container -->
 ></script>
 ````
 
@@ -41,6 +42,22 @@ Place this near the end of `<body>` on the pages where you want the widget to ap
 
 > Direct (raw) alternative URL (if you do not want jsDelivr):
 > `https://raw.githubusercontent.com/SubscriptionArchitect/ask-my-brand/main/dist/ask-my-brand.min.js`
+
+**Optional inline mount (placeholder div):**
+If you want to place the widget inside a specific container (instead of floating), add a placeholder and point `data-mount` to it:
+
+```html
+<div id="ask-my-brand-placeholder"></div>
+
+<script
+  src="https://cdn.jsdelivr.net/gh/SubscriptionArchitect/ask-my-brand@main/dist/ask-my-brand.min.js"
+  data-endpoint="https://www.example.com/ask"
+  data-logo-url="https://cdn.example.com/brand/logo.svg"
+  data-mount="#ask-my-brand-placeholder">
+</script>
+```
+
+> When `data-mount` is provided and found, the script applies **inline** style overrides (no extra CSS files) to render inline rather than fixed-position.
 
 ---
 
@@ -78,6 +95,7 @@ If your Ask page uses different selectors, update them in `scripts/ask-host-auto
 | `data-primary`      | No       | `#297FA5`                                | Primary color for border/header/button.                                |
 | `data-secondary`    | No       | `#582E56`                                | Secondary color used in body text accents.                             |
 | `data-position`     | No       | `bottom-right`                           | `bottom-right` (default) or `bottom-left`.                             |
+| `data-mount`        | No       | `#ask-my-brand-placeholder`              | CSS selector of a container to mount inline (not floating).            |
 
 The widget sends the question using the `ask` parameter by default. The helper accepts `ask`, `question`, or `q`.
 
@@ -114,20 +132,12 @@ The widget sends the question using the `ask` parameter by default. The helper a
 
 ```html
 <!-- ...your Ask page content... -->
-<section id="discoverySection">
-  <div id="ai-search-client">
-    <input type="text" placeholder="Ask your question" />
-    <button type="button">Ask</button>
-  </div>
-</section>
 
 <!-- Include helper right before closing body -->
 <script src="https://cdn.jsdelivr.net/gh/SubscriptionArchitect/ask-my-brand@main/scripts/ask-host-autofill.js"></script>
 </body>
 </html>
 ```
-
-> If your input/button live under different selectors, edit `scripts/ask-host-autofill.js` to match your DOM.
 
 ---
 
