@@ -1,27 +1,35 @@
 # ask-my-brand
 
-A tiny, dependency-free way to add a floating “Ask” widget to ANY site page and route questions to your brand’s Ask page.
+A tiny, dependency-free way to add an “Ask” widget to any site page and route questions to your brand’s Ask page.
 
 There are **two scripts** in this repo:
 
-1) **Site Page Widget** – add to any site page to render the Ask box and send users to your Ask page.  
-2) **Ask Page Helper** – add to the Ask page itself to read the incoming query string, prefill your input, scroll to the right section, and programmatically press your Ask button.
+1) **Site Page Widget** — embed on any site page to render the Ask box and send users to your Ask page.  
+2) **Ask Page Helper** — include on the Ask page itself to read the incoming query string, prefill your input, scroll to a section, and programmatically press your Ask button.
 
 No frameworks. All configuration is via `data-*` attributes on the widget tag.
 
 ---
 
-## Quick Start
+## Quick Start (self-hosted from this repo)
+
+> The examples below load files directly from **this repo** via `raw.githubusercontent.com`.  
+> Replace `SubscriptionArchitect/ask-my-brand` with your actual org/repo if different.
 
 ### 1) Site Page Widget (embed on any page)
 
-Place this near the end of `<body>` on the pages where you want the widget to appear:
+Add a placeholder where you want the widget to render, then include the script with `data-mount` pointing to that placeholder.
 
 ```html
+<!-- Placeholder container (required) -->
+<div id="ask-my-brand-placeholder"></div>
+
+<!-- Widget script (mounted into the placeholder above) -->
 <script
-  src="https://cdn.jsdelivr.net/gh/SubscriptionArchitect/ask-my-brand@main/dist/ask-my-brand.min.js"
+  src="https://raw.githubusercontent.com/SubscriptionArchitect/ask-my-brand/main/dist/ask-my-brand.min.js"
   data-endpoint="https://www.example.com/ask"                 <!-- REQUIRED: your Ask page URL -->
   data-logo-url="https://cdn.example.com/brand/logo.png"      <!-- REQUIRED: your brand logo -->
+  data-mount="#ask-my-brand-placeholder"                      <!-- REQUIRED: CSS selector for the placeholder -->
 
   data-prompt="Have a question? Ask us anything relevant to our brand."
   data-placeholder="Type your question..."
@@ -29,9 +37,6 @@ Place this near the end of `<body>` on the pages where you want the widget to ap
   data-sponsor-logo=""                                        <!-- optional -->
   data-primary="#297FA5"                                      <!-- optional -->
   data-secondary="#582E56"                                    <!-- optional -->
-  data-position="bottom-right"                                <!-- optional: bottom-right | bottom-left -->
-
-  data-mount=""                                               <!-- optional: CSS selector; mount inside a container -->
 ></script>
 ````
 
@@ -40,24 +45,7 @@ Place this near the end of `<body>` on the pages where you want the widget to ap
 * With a query param if the box has text: `?ask={encoded question}`
 * Without a query param if empty
 
-> Direct (raw) alternative URL (if you do not want jsDelivr):
-> `https://raw.githubusercontent.com/SubscriptionArchitect/ask-my-brand/main/dist/ask-my-brand.min.js`
-
-**Optional inline mount (placeholder div):**
-If you want to place the widget inside a specific container (instead of floating), add a placeholder and point `data-mount` to it:
-
-```html
-<div id="ask-my-brand-placeholder"></div>
-
-<script
-  src="https://cdn.jsdelivr.net/gh/SubscriptionArchitect/ask-my-brand@main/dist/ask-my-brand.min.js"
-  data-endpoint="https://www.example.com/ask"
-  data-logo-url="https://cdn.example.com/brand/logo.svg"
-  data-mount="#ask-my-brand-placeholder">
-</script>
-```
-
-> When `data-mount` is provided and found, the script applies **inline** style overrides (no extra CSS files) to render inline rather than fixed-position.
+> Prefer immutable links? Replace `main` with a **tag** (e.g., `v1.1.0`) or a **commit SHA** to pin a specific version.
 
 ---
 
@@ -66,7 +54,7 @@ If you want to place the widget inside a specific container (instead of floating
 Add this **at the bottom** of your Ask page (right before `</body>`):
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/SubscriptionArchitect/ask-my-brand@main/scripts/ask-host-autofill.js"></script>
+<script src="https://raw.githubusercontent.com/SubscriptionArchitect/ask-my-brand/main/scripts/ask-host-autofill.js"></script>
 ```
 
 What it does:
@@ -76,10 +64,7 @@ What it does:
 * Prefills `#ai-search-client input`
 * Programmatically clicks `#ai-search-client button` after your page UI is ready
 
-> Direct (raw) alternative URL:
-> `https://raw.githubusercontent.com/SubscriptionArchitect/ask-my-brand/main/scripts/ask-host-autofill.js`
-
-If your Ask page uses different selectors, update them in `scripts/ask-host-autofill.js`.
+> If your Ask page uses different selectors, update them in `scripts/ask-host-autofill.js`.
 
 ---
 
@@ -89,13 +74,12 @@ If your Ask page uses different selectors, update them in `scripts/ask-host-auto
 | ------------------- | -------- | ---------------------------------------- | ---------------------------------------------------------------------- |
 | `data-endpoint`     | Yes      | `https://www.example.com/ask`            | Absolute URL to your Ask destination page.                             |
 | `data-logo-url`     | Yes      | `https://cdn.example.com/brand/logo.png` | Brand logo shown in the widget header.                                 |
+| `data-mount`        | Yes      | `#ask-my-brand-placeholder`              | CSS selector of the placeholder to mount into.                         |
 | `data-prompt`       | No       | `Have a question? Ask us anything!`      | Short message in the widget body. If omitted, the body text is hidden. |
 | `data-placeholder`  | No       | `Type your question...`                  | Input placeholder text.                                                |
 | `data-sponsor-logo` | No       | `https://cdn.example.com/sponsor.png`    | Sponsor image in the footer. Leave blank to hide.                      |
 | `data-primary`      | No       | `#297FA5`                                | Primary color for border/header/button.                                |
 | `data-secondary`    | No       | `#582E56`                                | Secondary color used in body text accents.                             |
-| `data-position`     | No       | `bottom-right`                           | `bottom-right` (default) or `bottom-left`.                             |
-| `data-mount`        | No       | `#ask-my-brand-placeholder`              | CSS selector of a container to mount inline (not floating).            |
 
 The widget sends the question using the `ask` parameter by default. The helper accepts `ask`, `question`, or `q`.
 
@@ -110,36 +94,40 @@ The widget sends the question using the `ask` parameter by default. The helper a
 
 ## Minimal Examples
 
-**Site page (widget):**
+**Site page (widget mounted in a placeholder):**
 
 ```html
-<!-- ...your page content... -->
+<div id="ask-my-brand-placeholder"></div>
 <script
-  src="https://cdn.jsdelivr.net/gh/SubscriptionArchitect/ask-my-brand@main/dist/ask-my-brand.min.js"
+  src="https://raw.githubusercontent.com/SubscriptionArchitect/ask-my-brand/main/dist/ask-my-brand.min.js"
   data-endpoint="https://www.example.com/ask"
   data-logo-url="https://cdn.example.com/brand/logo.svg"
+  data-mount="#ask-my-brand-placeholder"
   data-prompt="Questions about our products or services? Ask away."
   data-placeholder="Type your question here..."
   data-primary="#162247"
-  data-secondary="#EF4627"
-  data-position="bottom-right">
+  data-secondary="#EF4627">
 </script>
-</body>
-</html>
 ```
 
 **Ask page (helper at bottom):**
 
 ```html
 <!-- ...your Ask page content... -->
+<section id="discoverySection">
+  <div id="ai-search-client">
+    <input type="text" placeholder="Ask your question" />
+    <button type="button">Ask</button>
+  </div>
+</section>
 
 <!-- Include helper right before closing body -->
-<script src="https://cdn.jsdelivr.net/gh/SubscriptionArchitect/ask-my-brand@main/scripts/ask-host-autofill.js"></script>
+<script src="https://raw.githubusercontent.com/SubscriptionArchitect/ask-my-brand/main/scripts/ask-host-autofill.js"></script>
 </body>
 </html>
 ```
 
----
+
 
 ## Accessibility
 
