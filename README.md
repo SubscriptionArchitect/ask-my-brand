@@ -32,11 +32,12 @@ Add a placeholder where you want the widget to render, then include the script w
   data-mount-id="ask-my-brand-placeholder"                    <!-- REQUIRED: ID of the placeholder container -->
 
   data-prompt="Have a question? Ask us anything relevant to our brand."
-  data-placeholder="Type your question..."
+  data-placeholder="Type your question…"
 
   data-sponsor-logo=""                                        <!-- optional -->
+  data-sponsor-href=""                                        <!-- optional: make sponsor logo clickable -->
   data-primary="#297FA5"                                      <!-- optional -->
-  data-secondary="#582E56"                                    <!-- optional -->
+  data-secondary="#000000"                                    <!-- optional (default is black) -->
 ></script>
 ```
 
@@ -70,16 +71,17 @@ What it does:
 
 ## Configuration (widget `data-*` attributes)
 
-| Attribute           | Required | Example                                  | Notes                                                                  |
-| ------------------- | -------- | ---------------------------------------- | ---------------------------------------------------------------------- |
-| `data-endpoint`     | Yes      | `https://www.example.com/ask`            | Absolute URL to your Ask destination page.                             |
-| `data-logo-url`     | Yes      | `https://cdn.example.com/brand/logo.png` | Brand logo shown in the widget header.                                 |
-| `data-mount-id`     | Yes      | `ask-my-brand-placeholder`               | **ID** of the placeholder element to mount into.                       |
-| `data-prompt`       | No       | `Have a question? Ask us anything!`      | Short message in the widget body. If omitted, the body text is hidden. |
-| `data-placeholder`  | No       | `Type your question...`                  | Input placeholder text.                                                |
-| `data-sponsor-logo` | No       | `https://cdn.example.com/sponsor.png`    | Sponsor image in the footer. Leave blank to hide.                      |
-| `data-primary`      | No       | `#297FA5`                                | Primary color for border/header/button.                                |
-| `data-secondary`    | No       | `#582E56`                                | Secondary color used in body text accents.                             |
+| Attribute           | Required | Example                                  | Notes                                                                                      |
+| ------------------- | -------- | ---------------------------------------- | ------------------------------------------------------------------------------------------ |
+| `data-endpoint`     | Yes      | `https://www.example.com/ask`            | Absolute URL to your Ask destination page.                                                 |
+| `data-logo-url`     | Yes      | `https://cdn.example.com/brand/logo.png` | Brand logo shown in the widget header.                                                     |
+| `data-mount-id`     | Yes      | `ask-my-brand-placeholder`               | **ID** of the placeholder element to mount into.                                           |
+| `data-prompt`       | No       | `Have a question? Ask us anything!`      | Short message in the widget body.                                                          |
+| `data-placeholder`  | No       | `Type your question…`                    | Input placeholder text.                                                                    |
+| `data-sponsor-logo` | No       | `https://cdn.example.com/sponsor.png`    | Sponsor image in the header; leave blank to hide.                                          |
+| `data-sponsor-href` | No       | `https://sponsor.example.com/`           | Makes the sponsor logo a hyperlink (opens in a new tab).                                   |
+| `data-primary`      | No       | `#297FA5`                                | Primary color for border/header/button.                                                    |
+| `data-secondary`    | No       | `#000000`                                | Secondary/accent color (used for “Ask” badge text + AI bubble text). Default is **black**. |
 
 The widget sends the question using the `ask` parameter by default. The helper accepts `ask`, `question`, or `q`.
 
@@ -104,9 +106,11 @@ The widget sends the question using the `ask` parameter by default. The helper a
   data-logo-url="https://cdn.example.com/brand/logo.svg"
   data-mount-id="ask-my-brand-placeholder"
   data-prompt="Questions about our products or services? Ask away."
-  data-placeholder="Type your question here..."
+  data-placeholder="Type your question here…"
+  data-sponsor-logo="https://cdn.example.com/sponsor.svg"
+  data-sponsor-href="https://sponsor.example.com/"
   data-primary="#162247"
-  data-secondary="#EF4627">
+  data-secondary="#111827">
 </script>
 ```
 
