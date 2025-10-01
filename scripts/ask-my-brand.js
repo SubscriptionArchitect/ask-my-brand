@@ -1,7 +1,7 @@
 /*!
  * Project: ask-my-brand (Widget Embed)
  * File: scripts/ask-my-brand.js
- * Version: 1.2.6
+ * Version: 1.2.8
  * Description: Brand-agnostic chat/ask widget that mounts into a placeholder container
  *              and redirects to your Ask page with the user’s query as a URL parameter.
  *
@@ -26,7 +26,9 @@
  *   1.2.3: Sponsor logo can be a hyperlink via data-sponsor-href (opens in new tab).
  *   1.2.4: Default secondary color changed to BLACK (#000000).
  *   1.2.5: Responsive header — logos scale down on medium screens and only stack <640px.
- *   1.2.6: Input + Send button share fixed height and center-align vertically in the input bar.
+ *   1.2.6: Input + Send button share fixed height and center-align vertically.
+ *   1.2.7: Header/panel polish; send disabled until text.
+ *   1.2.8: **Force-remove all text shadows and image borders/shadows inside the widget.**
  */
 
 (function () {
@@ -88,10 +90,13 @@
     var btnText      = getAttr("data-button-text")   || "Send";
     var qpName       = getAttr("data-param")         || "ask";
 
-    // CSS (responsive header: scale logos, stack only <640px)
+    // CSS (responsive header; remove all text-shadows and image borders inside widget)
     var style = document.createElement("style");
     style.textContent = [
       ".chat-wrapper{max-width:770px;margin:0 auto;background:#f9f9f9;border:3px solid ",primary,";border-radius:12px;box-shadow:0 12px 28px rgba(0,0,0,.18);display:flex;flex-direction:column;overflow:hidden;font-family:Arial,Helvetica,sans-serif;padding:15px}",
+      ".chat-wrapper, .chat-wrapper *{text-shadow:none !important}",                        /* kill any inherited text-shadows */
+      ".chat-wrapper img{border:0 !important;outline:0 !important;box-shadow:none !important;filter:none !important}", /* kill image borders/shadows */
+
       ".chat-header{display:flex;align-items:center;gap:12px;padding:10px 18px 20px 18px;background:#f7f9fc;border-bottom:1px solid #e1e1e1;flex-wrap:nowrap}",
       ".ask-icon{position:relative;display:inline-block;padding:2px 18px 4px;font-weight:700;line-height:1;font-family:Arial,Helvetica,sans-serif;color:",secondary,";border:3px solid ",primary,";border-radius:8px;background:#fff;font-size:clamp(18px,4.2vw,28px)}",
       ".ask-icon::after{content:'';position:absolute;top:100%;left:50%;width:38px;height:14px;background:",primary,";border-bottom-left-radius:7px;border-bottom-right-radius:7px;transform:translate(-50%,0);clip-path:polygon(0 0,50% 100%,100% 0);padding-bottom:8px}",
@@ -99,7 +104,9 @@
       ".header-sp{margin-left:auto;display:flex;align-items:center;gap:8px;font:11px/1 Arial,Helvetica,sans-serif;color:#000;margin-top:5px}",
       ".header-sp a{display:inline-block;line-height:0}",
       ".header-sp img{height:clamp(20px,4.2vw,30px);width:auto}",
-      ".chat-body{flex:1 1 auto;padding:20px 18px 80px;background:#ffffff;overflow-y:auto}",
+
+      /* Panel look for chat area */
+      ".chat-body{flex:1 1 auto;padding:20px 18px 80px;background:#ffffff;overflow-y:auto;border:1px solid #eee;border-radius:6px}",
       ".message{max-width:85%;margin-bottom:14px;padding:12px 16px;border-radius:12px;font-size:15px;line-height:1.4}",
       ".ai{background:#f3f4f7;color:",secondary,";border:1px solid #e7e6f0}",
       ".user{background:",primary,";color:#ffffff;margin-left:auto;border:1px solid rgba(0,0,0,.12)}",
@@ -107,7 +114,8 @@
       /* Input bar: keep button and input perfectly aligned center */
       ".input-bar{display:flex;gap:10px;align-items:center;padding:12px 18px;background:#f7f9fc;border-top:1px solid #e1e1e1}",
       "#questionBox{flex:1 1 auto;box-sizing:border-box;height:44px;border:1px solid #d9d9d9;border-radius:18px;padding:0 14px;font:15px/1.4 Arial,Helvetica,sans-serif;outline:none;display:flex;align-items:center}",
-      "#sendBtn{background:",primary,";color:#ffffff;border:none;border-radius:18px;font:700 16px/1 Arial,Helvetica,sans-serif;height:44px;padding:0 20px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box}",
+      "#sendBtn{background:",primary,";color:#ffffff;border:none;border-radius:18px;font:700 16px/1 Arial,Helvetica,sans-serif;height:44px;padding:0 20px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;opacity:.9}",
+      "#sendBtn[disabled]{opacity:.5;cursor:not-allowed}",
 
       ".chat-body::-webkit-scrollbar{width:6px}",
       ".chat-body::-webkit-scrollbar-thumb{background:rgba(0,0,0,.2);border-radius:4px}",
@@ -139,7 +147,7 @@
         "</div>",
         '<div class="input-bar">',
           '<input id="questionBox" type="text" placeholder="'+esc(placeholder)+'" aria-label="Your question">',
-          '<button id="sendBtn" type="button">'+esc(btnText)+'</button>',
+          '<button id="sendBtn" type="button" disabled>'+esc(btnText)+'</button>',
         "</div>",
       "</div>"
     ].join("");
@@ -170,8 +178,16 @@
       }, 300);
     }
 
+    // Enable/disable send based on input value
+    function toggleSend() {
+      var has = !!(box.value && box.value.trim());
+      sendBtn.disabled = !has;
+    }
+
     sendBtn.addEventListener("click", send);
     box.addEventListener("keydown", function (e) { if (e.key === "Enter") send(); });
+    box.addEventListener("input", toggleSend);
+    toggleSend(); // initial
 
     // Typewriter effect
     if (greetEl) {
