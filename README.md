@@ -13,8 +13,8 @@ No frameworks. All configuration is via `data-*` attributes on the widget tag.
 
 ## Quick Start (self-hosted from this repo)
 
-> The examples below load files directly from **this repo** via `raw.githubusercontent.com`.
-> Replace `SubscriptionArchitect/ask-my-brand` with your actual org/repo if different.
+> The examples below load files directly from **GitHub Pages** for this repo (correct MIME type).
+> Replace `subscriptionarchitect` and `ask-my-brand` if your org/repo differ.
 
 ### 1) Site Page Widget (embed on any page)
 
@@ -26,7 +26,7 @@ Add a placeholder where you want the widget to render, then include the script w
 
 <!-- Widget script (mounted into the placeholder above) -->
 <script
-  src="https://raw.githubusercontent.com/SubscriptionArchitect/ask-my-brand/main/scripts/ask-my-brand.js"
+  src="https://subscriptionarchitect.github.io/ask-my-brand/scripts/ask-my-brand.js"
   data-endpoint="https://www.example.com/ask"                 <!-- REQUIRED: your Ask page URL -->
   data-logo-url="https://cdn.example.com/brand/logo.png"      <!-- REQUIRED: your brand logo -->
   data-mount-id="ask-my-brand-placeholder"                    <!-- REQUIRED: ID of the placeholder container -->
@@ -40,12 +40,12 @@ Add a placeholder where you want the widget to render, then include the script w
 ></script>
 ```
 
-**Behavior:** When submitted, the widget opens your `data-endpoint` in a new tab:
+**Behavior:** When submitted, the widget navigates your browser to `data-endpoint`:
 
 * With a query param if the box has text: `?ask={encoded question}`
 * Without a query param if empty
 
-> Prefer immutable links? Replace `main` with a **tag** (e.g., `v1.2.0`) or a **commit SHA** to pin a specific version.
+> Note: The widget initializes ~4 seconds after page load to avoid racing other scripts.
 
 ---
 
@@ -54,7 +54,7 @@ Add a placeholder where you want the widget to render, then include the script w
 Add this **at the bottom** of your Ask page (right before `</body>`):
 
 ```html
-<script src="https://raw.githubusercontent.com/SubscriptionArchitect/ask-my-brand/main/scripts/ask-host-autofill.js"></script>
+<script src="https://subscriptionarchitect.github.io/ask-my-brand/scripts/ask-host-autofill.js"></script>
 ```
 
 What it does:
@@ -99,7 +99,7 @@ The widget sends the question using the `ask` parameter by default. The helper a
 ```html
 <div id="ask-my-brand-placeholder"></div>
 <script
-  src="https://raw.githubusercontent.com/SubscriptionArchitect/ask-my-brand/main/scripts/ask-my-brand.js"
+  src="https://subscriptionarchitect.github.io/ask-my-brand/scripts/ask-my-brand.js"
   data-endpoint="https://www.example.com/ask"
   data-logo-url="https://cdn.example.com/brand/logo.svg"
   data-mount-id="ask-my-brand-placeholder"
@@ -122,7 +122,7 @@ The widget sends the question using the `ask` parameter by default. The helper a
 </section>
 
 <!-- Include helper right before closing body -->
-<script src="https://raw.githubusercontent.com/SubscriptionArchitect/ask-my-brand/main/scripts/ask-host-autofill.js"></script>
+<script src="https://subscriptionarchitect.github.io/ask-my-brand/scripts/ask-host-autofill.js"></script>
 </body>
 </html>
 ```
