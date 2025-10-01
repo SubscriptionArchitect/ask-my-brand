@@ -1,7 +1,7 @@
 /*!
  * Project: ask-my-brand (Widget Embed)
  * File: scripts/ask-my-brand.js
- * Version: 1.2.2
+ * Version: 1.2.4
  * Description: Brand-agnostic chat/ask widget that mounts into a placeholder container
  *              and redirects to your Ask page with the user’s query as a URL parameter.
  *
@@ -11,19 +11,20 @@
  *
  * Required data-* on THIS <script>:
  *   - data-mount-id  (preferred) OR data-mount (legacy)  -> placeholder target
- *   - data-endpoint                                  -> Ask page URL
- *   - data-logo-url                                  -> Brand logo URL
+ *   - data-endpoint                                       -> Ask page URL
+ *   - data-logo-url                                       -> Brand logo URL
  *
  * Optional:
- *   - data-primary, data-secondary, data-sponsor-logo, data-sponsor-text
+ *   - data-primary, data-secondary, data-sponsor-logo, data-sponsor-text, data-sponsor-href
  *   - data-prompt, data-placeholder, data-button-text, data-param
  *   - data-debug="true" to enable console logging
  *
  * Behavior: Waits ~4s after DOM ready, injects UI, redirects to endpoint?param={encoded}.
  *
- * Changes (1.2.2):
- *   - AI chat bubble text now uses brand secondary color.
- *   - Sponsor logo size increased in header.
+ * Changes
+ *   1.2.2: AI chat bubble text uses brand secondary; larger sponsor logo.
+ *   1.2.3: Sponsor logo can be a hyperlink via data-sponsor-href (opens in new tab).
+ *   1.2.4: Default secondary color changed from purple (#582E56) to BLACK (#000000).
  */
 
 (function () {
@@ -52,10 +53,10 @@
 
   function init() {
     // Read config
-    var mountId = getAttr("data-mount-id") || "";          // preferred
-    var mountSelLegacy = getAttr("data-mount") || "";      // legacy support
-    var endpoint  = getAttr("data-endpoint");
-    var logoUrl   = getAttr("data-logo-url");
+    var mountId        = getAttr("data-mount-id") || "";  // preferred
+    var mountSelLegacy = getAttr("data-mount")    || "";  // legacy support
+    var endpoint       = getAttr("data-endpoint");
+    var logoUrl        = getAttr("data-logo-url");
 
     // Determine mount target
     var target = null;
@@ -74,10 +75,12 @@
       return err("Mount target not found. data-mount-id='" + mountId + "', data-mount='" + mountSelLegacy + "'");
     }
 
-    var primary      = getAttr("data-primary")       || "#297FA5";
-    var secondary    = getAttr("data-secondary")     || "#582E56";
+    // Brand options (defaults)
+    var primary      = getAttr("data-primary")       || "#297FA5";  // border/button
+    var secondary    = getAttr("data-secondary")     || "#000000";  // headings/accents (DEFAULT BLACK)
     var sponsorLogo  = getAttr("data-sponsor-logo")  || "";
     var sponsorText  = getAttr("data-sponsor-text")  || "SPONSORED BY";
+    var sponsorHref  = getAttr("data-sponsor-href")  || "";
     var prompt       = getAttr("data-prompt")        || "";
     var placeholder  = getAttr("data-placeholder")   || "Type your question…";
     var btnText      = getAttr("data-button-text")   || "Send";
@@ -92,10 +95,11 @@
       ".ask-icon::after{content:'';position:absolute;top:100%;left:50%;width:38px;height:14px;background:",primary,";border-bottom-left-radius:7px;border-bottom-right-radius:7px;transform:translate(-50%,0);clip-path:polygon(0 0,50% 100%,100% 0);padding-bottom:8px}",
       ".header-brand img{height:50px;width:auto}",
       ".header-sp{margin-left:auto;display:flex;align-items:center;gap:8px;font:11px/1 Arial,Helvetica,sans-serif;color:#000;margin-top:5px}",
-      ".header-sp img{height:28px;width:auto}",                       /* ↑ bigger sponsor logo */
+      ".header-sp a{display:inline-block;line-height:0}",
+      ".header-sp img{height:28px;width:auto}", /* bigger sponsor logo */
       ".chat-body{flex:1 1 auto;padding:20px 18px 80px;background:#ffffff;overflow-y:auto}",
       ".message{max-width:85%;margin-bottom:14px;padding:12px 16px;border-radius:12px;font-size:15px;line-height:1.4}",
-      ".ai{background:#f3f4f7;color:",secondary,";border:1px solid #e7e6f0}", /* ↑ AI text uses brand secondary */
+      ".ai{background:#f3f4f7;color:",secondary,";border:1px solid #e7e6f0}", /* AI text uses secondary (now default black) */
       ".user{background:",primary,";color:#ffffff;margin-left:auto;border:1px solid rgba(0,0,0,.12)}",
       ".input-bar{display:flex;gap:8px;align-items:center;padding:12px 18px;background:#f7f9fc;border-top:1px solid #e1e1e1}",
       "#questionBox{flex:1 1 auto;border:1px solid #d9d9d9;border-radius:18px;padding:10px 14px;font:15px/1.4 Arial,Helvetica,sans-serif;outline:none}",
@@ -106,6 +110,15 @@
     ].join("");
     document.head.appendChild(style);
 
+    // Sponsor block (supports hyperlink)
+    var headerSponsor = "";
+    if (sponsorLogo) {
+      var logoTag = sponsorHref
+        ? '<a href="'+esc(sponsorHref)+'" target="_blank" rel="noopener noreferrer"><img src="'+esc(sponsorLogo)+'" alt="Sponsor Logo"></a>'
+        : '<img src="'+esc(sponsorLogo)+'" alt="Sponsor Logo">';
+      headerSponsor = '<div class="header-sp">'+esc(sponsorText)+' ' + logoTag + '</div>';
+    }
+
     // HTML
     var wrapper = document.createElement("div");
     wrapper.innerHTML = [
@@ -113,7 +126,7 @@
         '<div class="chat-header">',
           '<div class="ask-icon">Ask</div>',
           '<div class="header-brand"><img src="',esc(logoUrl),'" alt="Brand Logo"></div>',
-          sponsorLogo ? '<div class="header-sp">'+esc(sponsorText)+' <img src="'+esc(sponsorLogo)+'" alt="Sponsor Logo"></div>' : "",
+          headerSponsor,
         "</div>",
         '<div id="chatBody" class="chat-body">',
           '<div class="message ai" id="aiGreet">', esc(prompt || "Welcome! Ask us anything related to our brand. Type your question below to get started."), "</div>",
@@ -177,4 +190,3 @@
     return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");
   }
 })();
-
