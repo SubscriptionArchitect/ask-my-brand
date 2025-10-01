@@ -1,4 +1,4 @@
-````markdown
+
 # ask-my-brand
 
 A tiny, dependency-free way to add a floating “Ask” widget to ANY site page and route questions to your brand’s Ask page.
@@ -170,5 +170,3 @@ See [CHANGELOG.md](./CHANGELOG.md). We follow semver.
 Apache-2.0 © 2025 Brandon Decker.
 Logos and trademarks referenced by integrators remain the property of their respective owners. See [LICENSE](./LICENSE) and [NOTICE](./NOTICE).
 
-```
-```
