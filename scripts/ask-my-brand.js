@@ -1,23 +1,40 @@
 /*!
- * ask-my-brand — placeholder-mounted chat widget
- * - Brand-agnostic; all styling/content via data-* attributes on THIS <script>
- * - 4s delayed init to avoid racing page scripts/layout
+ * Project: ask-my-brand (Widget Embed)
+ * File: scripts/ask-my-brand.js
+ * Version: 1.2.0
+ * Description: Brand-agnostic chat/ask widget that mounts into a placeholder container
+ *              and redirects to your Ask page with the user’s query as a URL parameter.
  *
- * REQUIRED data-attributes:
- *   data-mount-id     -> ID of the placeholder container (e.g., "askMyBrandPlaceholder")
- *   data-endpoint     -> Absolute URL of your Ask page (e.g., "https://www.example.com/ask")
- *   data-logo-url     -> Brand logo URL
+ * Author: Brandon Decker
+ * Copyright: © 2025 Brandon Decker
+ * License: Apache-2.0
+ * Repository: https://github.com/SubscriptionArchitect/ask-my-brand
+ * Issues: https://github.com/SubscriptionArchitect/ask-my-brand/issues
  *
- * OPTIONAL data-attributes:
- *   data-primary      -> Primary color (border/button/accent), e.g., "#297FA5"
- *   data-secondary    -> Secondary color (heading/label accents), e.g., "#582E56"
- *   data-sponsor-logo -> Sponsor logo URL (omit to hide)
- *   data-prompt       -> Greeting/intro text shown at the top of the chat
- *   data-placeholder  -> Input placeholder (default: "Type your question…")
- *   data-param        -> Query param name (default: "ask")
- *   data-button-text  -> Submit button text (default: "Send")
- *   data-sponsor-text -> Label before sponsor logo (default: "SPONSORED BY")
+ * Required data-* attributes on THIS <script> tag:
+ *   - data-mount-id      : ID of the placeholder container (e.g., "askMyBrandPlaceholder")
+ *   - data-endpoint      : Absolute URL of your Ask page (e.g., "https://www.example.com/ask")
+ *   - data-logo-url      : Brand logo URL
+ *
+ * Optional data-* attributes:
+ *   - data-primary       : Primary color (border/button/accent), e.g., "#297FA5"
+ *   - data-secondary     : Secondary color (heading/label accents), e.g., "#582E56"
+ *   - data-sponsor-logo  : Sponsor logo URL (omit to hide)
+ *   - data-sponsor-text  : Text label before sponsor logo (default: "SPONSORED BY")
+ *   - data-prompt        : Greeting/intro text at the top of the chat
+ *   - data-placeholder   : Input placeholder (default: "Type your question…")
+ *   - data-button-text   : Submit button text (default: "Send")
+ *   - data-param         : Query param name for redirect (default: "ask")
+ *
+ * Behavior:
+ *   - Renders a compact chat-style input UI inside the placeholder.
+ *   - On submit, navigates to: endpoint?[param]={encoded question}
+ *
+ * Notes:
+ *   - Initialization is intentionally delayed by 4,000 ms to avoid layout/contention with host pages.
+ *   - This file injects minimal component CSS via <style> for isolated styling (no external CSS).
  */
+
 (function () {
   "use strict";
 
@@ -29,34 +46,44 @@
     })();
   if (!script) return;
 
-  // Delay init by 4s (matches your referenced pattern)
-  setTimeout(init, 4000);
+  // Start after 4 seconds (post-DOM load or immediately if DOM is already ready)
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", function () {
+      setTimeout(init, 4000);
+    });
+  } else {
+    setTimeout(init, 4000);
+  }
 
   function init() {
-    // ---- Read config from data-* ----
-    var mountId   = attr("data-mount-id");
-    var endpoint  = attr("data-endpoint");
-    var logoUrl   = attr("data-logo-url");
+    // --- Config from data-* ---
+    var mountId   = getAttr("data-mount-id");
+    var endpoint  = getAttr("data-endpoint");
+    var logoUrl   = getAttr("data-logo-url");
 
     if (!mountId || !endpoint || !logoUrl) {
-      console.error("[ask-my-brand] Missing required attributes: data-mount-id, data-endpoint, data-logo-url");
+      console.error(
+        "[ask-my-brand] Missing required attributes: data-mount-id, data-endpoint, data-logo-url"
+      );
       return;
     }
 
-    var primary      = attr("data-primary")       || "#297FA5";
-    var secondary    = attr("data-secondary")     || "#582E56";
-    var sponsorLogo  = attr("data-sponsor-logo")  || "";
-    var prompt       = attr("data-prompt")        || "";
-    var placeholder  = attr("data-placeholder")   || "Type your question…";
-    var qpName       = attr("data-param")         || "ask";
-    var btnText      = attr("data-button-text")   || "Send";
-    var sponsorText  = attr("data-sponsor-text")  || "SPONSORED BY";
+    var primary      = getAttr("data-primary")       || "#297FA5";
+    var secondary    = getAttr("data-secondary")     || "#582E56";
+    var sponsorLogo  = getAttr("data-sponsor-logo")  || "";
+    var sponsorText  = getAttr("data-sponsor-text")  || "SPONSORED BY";
+    var prompt       = getAttr("data-prompt")        || "";
+    var placeholder  = getAttr("data-placeholder")   || "Type your question…";
+    var btnText      = getAttr("data-button-text")   || "Send";
+    var qpName       = getAttr("data-param")         || "ask";
 
-    // ---- Find mount target ----
     var target = document.getElementById(mountId);
-    if (!target) return;
+    if (!target) {
+      console.error("[ask-my-brand] data-mount-id target not found:", mountId);
+      return;
+    }
 
-    // ---- Inject CSS (brandable via primary/secondary) ----
+    // --- Inject component CSS (scoped by class names) ---
     var style = document.createElement("style");
     style.textContent = [
       ".chat-wrapper{max-width:770px;margin:0 auto;background:#f9f9f9;border:3px solid ",primary,";border-radius:12px;box-shadow:0 12px 28px rgba(0,0,0,.18);display:flex;flex-direction:column;overflow:hidden;font-family:Arial,Helvetica,sans-serif;padding:15px}",
@@ -79,15 +106,13 @@
     ].join("");
     document.head.appendChild(style);
 
-    // ---- Inject HTML (logo, optional sponsor, prompt) ----
+    // --- Build UI ---
     var wrapper = document.createElement("div");
     wrapper.innerHTML = [
       '<div class="chat-wrapper">',
         '<div class="chat-header">',
           '<div class="ask-icon">Ask</div>',
-          '<div class="header-brand">',
-            '<img src="',esc(logoUrl),'" alt="Brand Logo">',
-          "</div>",
+          '<div class="header-brand"><img src="',esc(logoUrl),'" alt="Brand Logo"></div>',
           sponsorLogo
             ? '<div class="header-sp">'+esc(sponsorText)+' <img src="'+esc(sponsorLogo)+'" alt="Sponsor Logo"></div>'
             : "",
@@ -105,7 +130,7 @@
     ].join("");
     target.appendChild(wrapper);
 
-    // ---- Behavior ----
+    // --- Behavior ---
     var chatBody = document.getElementById("chatBody");
     var box      = document.getElementById("questionBox");
     var sendBtn  = document.getElementById("sendBtn");
@@ -124,10 +149,8 @@
       if (!q) { box.focus(); return; }
       addMessage(q, "user");
       setTimeout(function () {
-        // Build redirect like: https://example.com/ask?ask=Your+Question
-        var url = endpoint + (endpoint.indexOf("?") === -1 ? "?" : "&") +
-                  encodeURIComponent(qpName) + "=" +
-                  encodeURIComponent(q).replace(/%20/g, "+");
+        var sep = endpoint.indexOf("?") === -1 ? "?" : "&";
+        var url = endpoint + sep + encodeURIComponent(qpName) + "=" + encodeURIComponent(q).replace(/%20/g, "+");
         window.location.href = url;
       }, 300);
     }
@@ -135,7 +158,7 @@
     sendBtn.addEventListener("click", send);
     box.addEventListener("keydown", function (e) { if (e.key === "Enter") send(); });
 
-    // Type-in greeting
+    // Typewriter effect for greeting
     if (greetEl) {
       var txt = greetEl.textContent;
       greetEl.textContent = "";
@@ -149,8 +172,8 @@
     }
   }
 
-  function attr(name) { return script.getAttribute(name) || ""; }
-
+  // --- Helpers ---
+  function getAttr(name) { return script.getAttribute(name) || ""; }
   function esc(s) {
     return String(s)
       .replace(/&/g, "&amp;")
@@ -160,4 +183,3 @@
       .replace(/'/g, "&#39;");
   }
 })();
-
