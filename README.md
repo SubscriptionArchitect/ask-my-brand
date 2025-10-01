@@ -1,53 +1,33 @@
+# ask-my-brand
 
-## Quick Start
+A tiny, dependency-free way to add a floating “Ask” widget to ANY site page and route questions to your brand’s Ask page.
 
-There are two parts to using **ask-my-brand**:
+There are **two scripts** in this repo:
+
+1) **Site Page Widget** – add to any site page to render the floating Ask box and send users to your Ask page.  
+2) **Ask Page Helper** – add to the Ask page itself to read the incoming query string, prefill your input, scroll to the right section, and programmatically press your Ask button.
+
+No frameworks. All configuration is via `data-*` attributes on the widget tag.
 
 ---
 
-### 1. Embed the widget on any site page
+## Quick Start
 
-Drop this snippet near the end of your `<body>` tag.  
-Replace values with your brand’s logo, endpoint, and colors.
+### 1) Site Page Widget (embed on any page)
+
+Place this near the end of `<body>` on the pages where you want the widget to appear:
 
 ```html
 <script
   src="https://cdn.jsdelivr.net/gh/SubscriptionArchitect/ask-my-brand@main/dist/ask-my-brand.min.js"
-  data-endpoint="https://www.example.com/ask"                 <!-- destination Ask page -->
-  data-logo-url="https://cdn.example.com/brand/logo.png"      
-  data-sponsor-logo=""                                        
-  data-primary="#297FA5"                                     
-  data-secondary="#582E56"                                    
-  data-position="bottom-right"                                <!-- bottom-right | bottom-left -->
-  data-prompt="Have a question? Ask us about anything relevant to our brand."
+  data-endpoint="https://www.example.com/ask"                 <!-- REQUIRED: your Ask page URL -->
+  data-logo-url="https://cdn.example.com/brand/logo.png"      <!-- REQUIRED: your brand logo -->
+
+  data-prompt="Have a question? Ask us anything relevant to our brand."
   data-placeholder="Type your question..."
+
+  data-sponsor-logo=""                                        <!-- optional -->
+  data-primary="#297FA5"                                      <!-- optional -->
+  data-secondary="#582E56"                                    <!-- optional -->
+  data-position="bottom-right"                                <!-- optional: bottom-right | bottom-left -->
 ></script>
-````
-
-* Required: `data-endpoint`, `data-logo-url`
-* Optional: `data-prompt`, `data-placeholder`, `data-sponsor-logo`, `data-primary`, `data-secondary`, `data-position`
-
----
-
-### 2. Add the host-page script to your Ask page
-
-On the page you specified in `data-endpoint`, add this script at the very bottom (before `</body>`):
-
-```html
-<script src="https://cdn.jsdelivr.net/gh/SubscriptionArchitect/ask-my-brand@main/scripts/ask-host-autofill.js"></script>
-```
-
-This script:
-
-* Reads `?ask=`, `?question=`, or `?q=` from the URL
-* Smooth-scrolls to `#discoverySection` (if present)
-* Autofills `#ai-search-client input`
-* Programmatically clicks `#ai-search-client button`
-
-If your Ask page uses different selectors, edit `scripts/ask-host-autofill.js` accordingly.
-
----
-
-✅ That’s it — drop the widget anywhere, and it will send the user’s question to your Ask page where the host script takes over.
-
-
