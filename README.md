@@ -146,25 +146,6 @@ The widget sends the question using the `ask` parameter by default. The helper a
 
 ---
 
-## Development
-
-```bash
-git clone https://github.com/SubscriptionArchitect/ask-my-brand.git
-cd ask-my-brand
-npm install
-npm run build   # copies src/ask-my-brand.js → dist/ask-my-brand.min.js for v1
-```
-
-Consider adding your own minification/bundling later (esbuild, rollup, etc.).
-
----
-
-## Changelog
-
-See [CHANGELOG.md](./CHANGELOG.md). We follow semver.
-
----
-
 ## License
 
 Apache-2.0 © 2025 Brandon Decker.
