@@ -1,32 +1,55 @@
-# ask-my-brand (brand-agnostic Ask widget)
 
-A tiny, dependency-free widget you can drop on **any brand site** to capture a user’s question and open your brand’s “Ask” page with the query in the URL. The widget is fully configured via **data-attributes** (no JS defaults), including the **prompt** copy.
+## Quick Start
 
-## What this repo includes
-
-- `src/ask-my-brand.js` – the embeddable widget (reads ONLY from data-attributes)
-- `dist/ask-my-brand.min.js` – same as src for v1; wire minification later
-- `scripts/ask-host-autofill.js` – a script for the **destination “Ask” page** that:
-  - Reads the query from `ask`, `question`, or `q` URL params
-  - Smooth-scrolls to your discovery/AI section
-  - Prefills and programmatically clicks your on-page Ask button
-- Project docs: `LICENSE` (Apache-2.0), `NOTICE`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `SECURITY.md`, `CHANGELOG.md`
+There are two parts to using **ask-my-brand**:
 
 ---
 
-## 1) Embed the widget (on any brand page)
+### 1. Embed the widget on any site page
 
-Place near the end of `<body>`:
+Drop this snippet near the end of your `<body>` tag.  
+Replace values with your brand’s logo, endpoint, and colors.
 
 ```html
 <script
-  src="https://YOUR_CDN/ask-my-brand/dist/ask-my-brand.min.js"
-  data-endpoint="https://www.food-safety.com/ask-fsm"
-  data-logo-url="https://cdn.omeda.com/hosted/images/CLIENT_BNP/BNPCD/FSM-FB.png"
-  data-sponsor-logo="https://cdn.omeda.com/hosted/images/CLIENT_BNP/BNPCD/trustwell-logo.png"
-  data-primary="#297FA5"
-  data-secondary="#582E56"
-  data-position="bottom-right"
-  data-prompt="Have a food safety question? Ask us about HACCP, audits, recalls, regulatory changes, sanitation, and more."
+  src="https://cdn.jsdelivr.net/gh/SubscriptionArchitect/ask-my-brand@main/dist/ask-my-brand.min.js"
+  data-endpoint="https://www.example.com/ask"                 <!-- destination Ask page -->
+  data-logo-url="https://cdn.example.com/brand/logo.png"      <!-- brand logo -->
+  data-sponsor-logo=""                                        <!-- optional -->
+  data-primary="#297FA5"                                      <!-- optional -->
+  data-secondary="#582E56"                                    <!-- optional -->
+  data-position="bottom-right"                                <!-- optional: bottom-right | bottom-left -->
+  data-prompt="Have a question? Ask us about anything relevant to our brand."
   data-placeholder="Type your question..."
 ></script>
+````
+
+* Required: `data-endpoint`, `data-logo-url`
+* Optional: `data-prompt`, `data-placeholder`, `data-sponsor-logo`, `data-primary`, `data-secondary`, `data-position`
+
+---
+
+### 2. Add the host-page script to your Ask page
+
+On the page you specified in `data-endpoint`, add this script at the very bottom (before `</body>`):
+
+```html
+<script src="https://cdn.jsdelivr.net/gh/SubscriptionArchitect/ask-my-brand@main/scripts/ask-host-autofill.js"></script>
+```
+
+This script:
+
+* Reads `?ask=`, `?question=`, or `?q=` from the URL
+* Smooth-scrolls to `#discoverySection` (if present)
+* Autofills `#ai-search-client input`
+* Programmatically clicks `#ai-search-client button`
+
+If your Ask page uses different selectors, edit `scripts/ask-host-autofill.js` accordingly.
+
+---
+
+✅ That’s it — drop the widget anywhere, and it will send the user’s question to your Ask page where the host script takes over.
+
+```
+
+
