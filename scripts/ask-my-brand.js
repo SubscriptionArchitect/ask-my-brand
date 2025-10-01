@@ -1,7 +1,7 @@
 /*!
  * Project: ask-my-brand (Widget Embed)
  * File: scripts/ask-my-brand.js
- * Version: 1.2.1
+ * Version: 1.2.2
  * Description: Brand-agnostic chat/ask widget that mounts into a placeholder container
  *              and redirects to your Ask page with the user’s query as a URL parameter.
  *
@@ -20,6 +20,10 @@
  *   - data-debug="true" to enable console logging
  *
  * Behavior: Waits ~4s after DOM ready, injects UI, redirects to endpoint?param={encoded}.
+ *
+ * Changes (1.2.2):
+ *   - AI chat bubble text now uses brand secondary color.
+ *   - Sponsor logo size increased in header.
  */
 
 (function () {
@@ -87,18 +91,18 @@
       ".ask-icon{position:relative;display:inline-block;padding:2px 18px 4px;font:700 28px/1 Arial,Helvetica,sans-serif;color:",secondary,";border:3px solid ",primary,";border-radius:8px;background:#fff}",
       ".ask-icon::after{content:'';position:absolute;top:100%;left:50%;width:38px;height:14px;background:",primary,";border-bottom-left-radius:7px;border-bottom-right-radius:7px;transform:translate(-50%,0);clip-path:polygon(0 0,50% 100%,100% 0);padding-bottom:8px}",
       ".header-brand img{height:50px;width:auto}",
-      ".header-sp{margin-left:auto;display:flex;align-items:center;gap:6px;font:11px/1 Arial,Helvetica,sans-serif;color:#000;margin-top:5px}",
-      ".header-sp img{height:20px;width:auto}",
+      ".header-sp{margin-left:auto;display:flex;align-items:center;gap:8px;font:11px/1 Arial,Helvetica,sans-serif;color:#000;margin-top:5px}",
+      ".header-sp img{height:28px;width:auto}",                       /* ↑ bigger sponsor logo */
       ".chat-body{flex:1 1 auto;padding:20px 18px 80px;background:#ffffff;overflow-y:auto}",
       ".message{max-width:85%;margin-bottom:14px;padding:12px 16px;border-radius:12px;font-size:15px;line-height:1.4}",
-      ".ai{background:#f3f4f7;color:#0f2a33;border:1px solid #e7e6f0}",
+      ".ai{background:#f3f4f7;color:",secondary,";border:1px solid #e7e6f0}", /* ↑ AI text uses brand secondary */
       ".user{background:",primary,";color:#ffffff;margin-left:auto;border:1px solid rgba(0,0,0,.12)}",
       ".input-bar{display:flex;gap:8px;align-items:center;padding:12px 18px;background:#f7f9fc;border-top:1px solid #e1e1e1}",
       "#questionBox{flex:1 1 auto;border:1px solid #d9d9d9;border-radius:18px;padding:10px 14px;font:15px/1.4 Arial,Helvetica,sans-serif;outline:none}",
       "#sendBtn{background:",primary,";color:#ffffff;border:none;border-radius:18px;font:700 16px/1 Arial,Helvetica,sans-serif;padding:10px 24px;cursor:pointer}",
       ".chat-body::-webkit-scrollbar{width:6px}",
       ".chat-body::-webkit-scrollbar-thumb{background:rgba(0,0,0,.2);border-radius:4px}",
-      "@media (max-width:768px){.chat-header{justify-content:center;padding:10px}.ask-icon{padding:2px 12px 4px;font-size:20px}.ask-icon::after{width:26px;height:10px}.header-sp{flex-basis:100%;justify-content:center;margin-top:6px;font-size:10px}.header-sp img{height:16px}}"
+      "@media (max-width:768px){.chat-header{justify-content:center;padding:10px}.ask-icon{padding:2px 12px 4px;font-size:20px}.ask-icon::after{width:26px;height:10px}.header-sp{flex-basis:100%;justify-content:center;margin-top:6px;font-size:10px}.header-sp img{height:24px}}"
     ].join("");
     document.head.appendChild(style);
 
@@ -173,3 +177,4 @@
     return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");
   }
 })();
+
