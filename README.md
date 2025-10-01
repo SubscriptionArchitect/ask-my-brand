@@ -4,8 +4,8 @@ A tiny, dependency-free way to add an “Ask” widget to any site page and rout
 
 There are **two scripts** in this repo:
 
-1) **Site Page Widget** — embed on any site page to render the Ask box and send users to your Ask page.  
-2) **Ask Page Helper** — include on the Ask page itself to read the incoming query string, prefill your input, scroll to a section, and programmatically press your Ask button.
+1. **Site Page Widget** — embed on any site page to render the Ask box and send users to your Ask page.
+2. **Ask Page Helper** — include on the Ask page itself to read the incoming query string, prefill your input, scroll to a section, and programmatically press your Ask button.
 
 No frameworks. All configuration is via `data-*` attributes on the widget tag.
 
@@ -13,12 +13,12 @@ No frameworks. All configuration is via `data-*` attributes on the widget tag.
 
 ## Quick Start (self-hosted from this repo)
 
-> The examples below load files directly from **this repo** via `raw.githubusercontent.com`.  
+> The examples below load files directly from **this repo** via `raw.githubusercontent.com`.
 > Replace `SubscriptionArchitect/ask-my-brand` with your actual org/repo if different.
 
 ### 1) Site Page Widget (embed on any page)
 
-Add a placeholder where you want the widget to render, then include the script with `data-mount` pointing to that placeholder.
+Add a placeholder where you want the widget to render, then include the script with `data-mount-id` pointing to that placeholder.
 
 ```html
 <!-- Placeholder container (required) -->
@@ -26,10 +26,10 @@ Add a placeholder where you want the widget to render, then include the script w
 
 <!-- Widget script (mounted into the placeholder above) -->
 <script
-  src="https://raw.githubusercontent.com/SubscriptionArchitect/ask-my-brand/main/dist/ask-my-brand.min.js"
+  src="https://raw.githubusercontent.com/SubscriptionArchitect/ask-my-brand/main/scripts/ask-my-brand.js"
   data-endpoint="https://www.example.com/ask"                 <!-- REQUIRED: your Ask page URL -->
   data-logo-url="https://cdn.example.com/brand/logo.png"      <!-- REQUIRED: your brand logo -->
-  data-mount="#ask-my-brand-placeholder"                      <!-- REQUIRED: CSS selector for the placeholder -->
+  data-mount-id="ask-my-brand-placeholder"                    <!-- REQUIRED: ID of the placeholder container -->
 
   data-prompt="Have a question? Ask us anything relevant to our brand."
   data-placeholder="Type your question..."
@@ -38,14 +38,14 @@ Add a placeholder where you want the widget to render, then include the script w
   data-primary="#297FA5"                                      <!-- optional -->
   data-secondary="#582E56"                                    <!-- optional -->
 ></script>
-````
+```
 
 **Behavior:** When submitted, the widget opens your `data-endpoint` in a new tab:
 
 * With a query param if the box has text: `?ask={encoded question}`
 * Without a query param if empty
 
-> Prefer immutable links? Replace `main` with a **tag** (e.g., `v1.1.0`) or a **commit SHA** to pin a specific version.
+> Prefer immutable links? Replace `main` with a **tag** (e.g., `v1.2.0`) or a **commit SHA** to pin a specific version.
 
 ---
 
@@ -74,7 +74,7 @@ What it does:
 | ------------------- | -------- | ---------------------------------------- | ---------------------------------------------------------------------- |
 | `data-endpoint`     | Yes      | `https://www.example.com/ask`            | Absolute URL to your Ask destination page.                             |
 | `data-logo-url`     | Yes      | `https://cdn.example.com/brand/logo.png` | Brand logo shown in the widget header.                                 |
-| `data-mount`        | Yes      | `#ask-my-brand-placeholder`              | CSS selector of the placeholder to mount into.                         |
+| `data-mount-id`     | Yes      | `ask-my-brand-placeholder`               | **ID** of the placeholder element to mount into.                       |
 | `data-prompt`       | No       | `Have a question? Ask us anything!`      | Short message in the widget body. If omitted, the body text is hidden. |
 | `data-placeholder`  | No       | `Type your question...`                  | Input placeholder text.                                                |
 | `data-sponsor-logo` | No       | `https://cdn.example.com/sponsor.png`    | Sponsor image in the footer. Leave blank to hide.                      |
@@ -87,7 +87,7 @@ The widget sends the question using the `ask` parameter by default. The helper a
 
 ## File Locations (in this repo)
 
-* **Widget script (site pages)**: `dist/ask-my-brand.min.js`
+* **Widget script (site pages)**: `scripts/ask-my-brand.js`
 * **Ask helper (Ask page)**: `scripts/ask-host-autofill.js`
 
 ---
@@ -99,10 +99,10 @@ The widget sends the question using the `ask` parameter by default. The helper a
 ```html
 <div id="ask-my-brand-placeholder"></div>
 <script
-  src="https://raw.githubusercontent.com/SubscriptionArchitect/ask-my-brand/main/dist/ask-my-brand.min.js"
+  src="https://raw.githubusercontent.com/SubscriptionArchitect/ask-my-brand/main/scripts/ask-my-brand.js"
   data-endpoint="https://www.example.com/ask"
   data-logo-url="https://cdn.example.com/brand/logo.svg"
-  data-mount="#ask-my-brand-placeholder"
+  data-mount-id="ask-my-brand-placeholder"
   data-prompt="Questions about our products or services? Ask away."
   data-placeholder="Type your question here..."
   data-primary="#162247"
@@ -127,8 +127,6 @@ The widget sends the question using the `ask` parameter by default. The helper a
 </html>
 ```
 
-
-
 ## Accessibility
 
 * Keyboard friendly (Enter submits).
@@ -148,4 +146,3 @@ The widget sends the question using the `ask` parameter by default. The helper a
 
 Apache-2.0 © 2025 Brandon Decker.
 Logos and trademarks referenced by integrators remain the property of their respective owners. See [LICENSE](./LICENSE) and [NOTICE](./NOTICE).
-
