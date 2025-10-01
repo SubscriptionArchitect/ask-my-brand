@@ -14,11 +14,11 @@ Replace values with your brand’s logo, endpoint, and colors.
 <script
   src="https://cdn.jsdelivr.net/gh/SubscriptionArchitect/ask-my-brand@main/dist/ask-my-brand.min.js"
   data-endpoint="https://www.example.com/ask"                 <!-- destination Ask page -->
-  data-logo-url="https://cdn.example.com/brand/logo.png"      <!-- brand logo -->
-  data-sponsor-logo=""                                        <!-- optional -->
-  data-primary="#297FA5"                                      <!-- optional -->
-  data-secondary="#582E56"                                    <!-- optional -->
-  data-position="bottom-right"                                <!-- optional: bottom-right | bottom-left -->
+  data-logo-url="https://cdn.example.com/brand/logo.png"      
+  data-sponsor-logo=""                                        
+  data-primary="#297FA5"                                     
+  data-secondary="#582E56"                                    
+  data-position="bottom-right"                                <!-- bottom-right | bottom-left -->
   data-prompt="Have a question? Ask us about anything relevant to our brand."
   data-placeholder="Type your question..."
 ></script>
@@ -49,7 +49,5 @@ If your Ask page uses different selectors, edit `scripts/ask-host-autofill.js` a
 ---
 
 ✅ That’s it — drop the widget anywhere, and it will send the user’s question to your Ask page where the host script takes over.
-
-```
 
 
