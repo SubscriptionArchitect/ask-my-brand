@@ -1,7 +1,7 @@
 /*!
  * Project: ask-my-brand (Widget Embed)
  * File: scripts/ask-my-brand.js
- * Version: 1.2.5
+ * Version: 1.2.6
  * Description: Brand-agnostic chat/ask widget that mounts into a placeholder container
  *              and redirects to your Ask page with the user’s query as a URL parameter.
  *
@@ -26,6 +26,7 @@
  *   1.2.3: Sponsor logo can be a hyperlink via data-sponsor-href (opens in new tab).
  *   1.2.4: Default secondary color changed to BLACK (#000000).
  *   1.2.5: Responsive header — logos scale down on medium screens and only stack <640px.
+ *   1.2.6: Input + Send button share fixed height and center-align vertically in the input bar.
  */
 
 (function () {
@@ -102,9 +103,12 @@
       ".message{max-width:85%;margin-bottom:14px;padding:12px 16px;border-radius:12px;font-size:15px;line-height:1.4}",
       ".ai{background:#f3f4f7;color:",secondary,";border:1px solid #e7e6f0}",
       ".user{background:",primary,";color:#ffffff;margin-left:auto;border:1px solid rgba(0,0,0,.12)}",
-      ".input-bar{display:flex;gap:8px;align-items:center;padding:12px 18px;background:#f7f9fc;border-top:1px solid #e1e1e1}",
-      "#questionBox{flex:1 1 auto;border:1px solid #d9d9d9;border-radius:18px;padding:10px 14px;font:15px/1.4 Arial,Helvetica,sans-serif;outline:none}",
-      "#sendBtn{background:",primary,";color:#ffffff;border:none;border-radius:18px;font:700 16px/1 Arial,Helvetica,sans-serif;padding:10px 24px;cursor:pointer}",
+
+      /* Input bar: keep button and input perfectly aligned center */
+      ".input-bar{display:flex;gap:10px;align-items:center;padding:12px 18px;background:#f7f9fc;border-top:1px solid #e1e1e1}",
+      "#questionBox{flex:1 1 auto;box-sizing:border-box;height:44px;border:1px solid #d9d9d9;border-radius:18px;padding:0 14px;font:15px/1.4 Arial,Helvetica,sans-serif;outline:none;display:flex;align-items:center}",
+      "#sendBtn{background:",primary,";color:#ffffff;border:none;border-radius:18px;font:700 16px/1 Arial,Helvetica,sans-serif;height:44px;padding:0 20px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box}",
+
       ".chat-body::-webkit-scrollbar{width:6px}",
       ".chat-body::-webkit-scrollbar-thumb{background:rgba(0,0,0,.2);border-radius:4px}",
       "@media (max-width:900px){.chat-header{gap:10px}.header-sp{gap:6px}}",
