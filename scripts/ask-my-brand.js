@@ -1,38 +1,25 @@
 /*!
  * Project: ask-my-brand (Widget Embed)
  * File: scripts/ask-my-brand.js
- * Version: 1.2.0
+ * Version: 1.2.1
  * Description: Brand-agnostic chat/ask widget that mounts into a placeholder container
  *              and redirects to your Ask page with the user’s query as a URL parameter.
  *
  * Author: Brandon Decker
- * Copyright: © 2025 Brandon Decker
  * License: Apache-2.0
- * Repository: https://github.com/SubscriptionArchitect/ask-my-brand
- * Issues: https://github.com/SubscriptionArchitect/ask-my-brand/issues
+ * Repo: https://github.com/SubscriptionArchitect/ask-my-brand
  *
- * Required data-* attributes on THIS <script> tag:
- *   - data-mount-id      : ID of the placeholder container (e.g., "askMyBrandPlaceholder")
- *   - data-endpoint      : Absolute URL of your Ask page (e.g., "https://www.example.com/ask")
- *   - data-logo-url      : Brand logo URL
+ * Required data-* on THIS <script>:
+ *   - data-mount-id  (preferred) OR data-mount (legacy)  -> placeholder target
+ *   - data-endpoint                                  -> Ask page URL
+ *   - data-logo-url                                  -> Brand logo URL
  *
- * Optional data-* attributes:
- *   - data-primary       : Primary color (border/button/accent), e.g., "#297FA5"
- *   - data-secondary     : Secondary color (heading/label accents), e.g., "#582E56"
- *   - data-sponsor-logo  : Sponsor logo URL (omit to hide)
- *   - data-sponsor-text  : Text label before sponsor logo (default: "SPONSORED BY")
- *   - data-prompt        : Greeting/intro text at the top of the chat
- *   - data-placeholder   : Input placeholder (default: "Type your question…")
- *   - data-button-text   : Submit button text (default: "Send")
- *   - data-param         : Query param name for redirect (default: "ask")
+ * Optional:
+ *   - data-primary, data-secondary, data-sponsor-logo, data-sponsor-text
+ *   - data-prompt, data-placeholder, data-button-text, data-param
+ *   - data-debug="true" to enable console logging
  *
- * Behavior:
- *   - Renders a compact chat-style input UI inside the placeholder.
- *   - On submit, navigates to: endpoint?[param]={encoded question}
- *
- * Notes:
- *   - Initialization is intentionally delayed by 4,000 ms to avoid layout/contention with host pages.
- *   - This file injects minimal component CSS via <style> for isolated styling (no external CSS).
+ * Behavior: Waits ~4s after DOM ready, injects UI, redirects to endpoint?param={encoded}.
  */
 
 (function () {
@@ -46,7 +33,11 @@
     })();
   if (!script) return;
 
-  // Start after 4 seconds (post-DOM load or immediately if DOM is already ready)
+  var DEBUG = (script.getAttribute("data-debug") || "").toLowerCase() === "true";
+  function log(){ if (DEBUG) console.log.apply(console, ["[ask-my-brand]"].concat([].slice.call(arguments))); }
+  function err(){ console.error.apply(console, ["[ask-my-brand]"].concat([].slice.call(arguments))); }
+
+  // Start after 4 seconds (post-DOM load)
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", function () {
       setTimeout(init, 4000);
@@ -56,16 +47,27 @@
   }
 
   function init() {
-    // --- Config from data-* ---
-    var mountId   = getAttr("data-mount-id");
+    // Read config
+    var mountId = getAttr("data-mount-id") || "";          // preferred
+    var mountSelLegacy = getAttr("data-mount") || "";      // legacy support
     var endpoint  = getAttr("data-endpoint");
     var logoUrl   = getAttr("data-logo-url");
 
-    if (!mountId || !endpoint || !logoUrl) {
-      console.error(
-        "[ask-my-brand] Missing required attributes: data-mount-id, data-endpoint, data-logo-url"
-      );
-      return;
+    // Determine mount target
+    var target = null;
+    if (mountId) target = document.getElementById(mountId);
+    if (!target && mountSelLegacy) target = safeQuery(mountSelLegacy);
+
+    log("mountId:", mountId, "legacy mount selector:", mountSelLegacy, "endpoint:", endpoint, "logo:", logoUrl);
+
+    if (!endpoint || !logoUrl) {
+      return err("Missing required attributes: data-endpoint and/or data-logo-url");
+    }
+    if (!mountId && !mountSelLegacy) {
+      return err("Missing required mount: set data-mount-id (preferred) or data-mount (legacy).");
+    }
+    if (!target) {
+      return err("Mount target not found. data-mount-id='" + mountId + "', data-mount='" + mountSelLegacy + "'");
     }
 
     var primary      = getAttr("data-primary")       || "#297FA5";
@@ -77,13 +79,7 @@
     var btnText      = getAttr("data-button-text")   || "Send";
     var qpName       = getAttr("data-param")         || "ask";
 
-    var target = document.getElementById(mountId);
-    if (!target) {
-      console.error("[ask-my-brand] data-mount-id target not found:", mountId);
-      return;
-    }
-
-    // --- Inject component CSS (scoped by class names) ---
+    // CSS
     var style = document.createElement("style");
     style.textContent = [
       ".chat-wrapper{max-width:770px;margin:0 auto;background:#f9f9f9;border:3px solid ",primary,";border-radius:12px;box-shadow:0 12px 28px rgba(0,0,0,.18);display:flex;flex-direction:column;overflow:hidden;font-family:Arial,Helvetica,sans-serif;padding:15px}",
@@ -106,21 +102,17 @@
     ].join("");
     document.head.appendChild(style);
 
-    // --- Build UI ---
+    // HTML
     var wrapper = document.createElement("div");
     wrapper.innerHTML = [
       '<div class="chat-wrapper">',
         '<div class="chat-header">',
           '<div class="ask-icon">Ask</div>',
           '<div class="header-brand"><img src="',esc(logoUrl),'" alt="Brand Logo"></div>',
-          sponsorLogo
-            ? '<div class="header-sp">'+esc(sponsorText)+' <img src="'+esc(sponsorLogo)+'" alt="Sponsor Logo"></div>'
-            : "",
+          sponsorLogo ? '<div class="header-sp">'+esc(sponsorText)+' <img src="'+esc(sponsorLogo)+'" alt="Sponsor Logo"></div>' : "",
         "</div>",
         '<div id="chatBody" class="chat-body">',
-          '<div class="message ai" id="aiGreet">',
-            esc(prompt || "Welcome! Ask us anything related to our brand. Type your question below to get started."),
-          "</div>",
+          '<div class="message ai" id="aiGreet">', esc(prompt || "Welcome! Ask us anything related to our brand. Type your question below to get started."), "</div>",
         "</div>",
         '<div class="input-bar">',
           '<input id="questionBox" type="text" placeholder="'+esc(placeholder)+'" aria-label="Your question">',
@@ -130,7 +122,7 @@
     ].join("");
     target.appendChild(wrapper);
 
-    // --- Behavior ---
+    // Behavior
     var chatBody = document.getElementById("chatBody");
     var box      = document.getElementById("questionBox");
     var sendBtn  = document.getElementById("sendBtn");
@@ -158,7 +150,7 @@
     sendBtn.addEventListener("click", send);
     box.addEventListener("keydown", function (e) { if (e.key === "Enter") send(); });
 
-    // Typewriter effect for greeting
+    // Typewriter effect
     if (greetEl) {
       var txt = greetEl.textContent;
       greetEl.textContent = "";
@@ -170,16 +162,14 @@
         }
       })();
     }
+
+    log("Widget initialized successfully.");
   }
 
-  // --- Helpers ---
+  // Helpers
   function getAttr(name) { return script.getAttribute(name) || ""; }
+  function safeQuery(sel){ try { return document.querySelector(sel); } catch(e) { err("Invalid selector in data-mount:", sel); return null; } }
   function esc(s) {
-    return String(s)
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#39;");
+    return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");
   }
 })();
