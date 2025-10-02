@@ -13,8 +13,6 @@ No frameworks. All configuration is via `data-*` attributes on the widget tag.
 
 ## Quick Start (self-hosted from this repo)
 
-> The examples below load files directly from **GitHub Pages** for this repo (correct MIME type).
-> Replace `subscriptionarchitect` and `ask-my-brand` if your org/repo differ.
 
 ### 1) Site Page Widget (embed on any page)
 
